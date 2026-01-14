@@ -50,3 +50,5 @@ require'barbar'.setup {
 	letters = 'asdfjkl;ghnmxcvbziowerutyqpASDFJKLGHNMXCVBZIOWERUTYQP',
 	no_name_title = nil,
 }
+
+

@@ -17,6 +17,13 @@ Plug('hrsh7th/cmp-cmdline')
 Plug('hrsh7th/nvim-cmp')
 Plug('hrsh7th/cmp-nvim-lsp' ) 
 Plug('hrsh7th/cmp-nvim-lsp-signature-help')
+-- Telescope
+Plug('nvim-lua/plenary.nvim') --for fzf
+Plug('nvim-telescope/telescope.nvim', { [ 'tag' ] = 'v0.2.1' })
+Plug('ibhagwan/fzf-lua', {['branch'] = 'main'})
+
+-- Autosession
+Plug('rmagatti/auto-session')
 
 vim.call('plug#end')
 
@@ -41,3 +48,5 @@ require"barbar"
 require"lua_line"
 require"nvim-treesitter"
 require"cmp_config"
+require"telescope_config"
+require"autosession"
