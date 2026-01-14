@@ -20,10 +20,10 @@ require("nvim-tree").setup({
     group_empty = true,
   },
   filters = {
-    dotfiles = true,
+    dotfiles = false,
   },
 })
 
--- Горячие клавиши для nvim-tree (добавляем глобально)
+-- -- Горячие клавиши для nvim-tree (добавляем глобально)
 vim.keymap.set("n", "<C-n>", ":NvimTreeToggle<CR>", { silent = true })       -- открыть/закрыть дерево
 vim.keymap.set("n", "<leader>e", ":NvimTreeFocus<CR>", { silent = true })   -- фокус на дерево (если уже открыто)

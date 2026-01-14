@@ -25,6 +25,9 @@ Plug('ibhagwan/fzf-lua', {['branch'] = 'main'})
 -- Autosession
 Plug('rmagatti/auto-session')
 
+-- Comment 
+Plug('numToStr/Comment.nvim')
+
 vim.call('plug#end')
 
 
@@ -50,3 +53,4 @@ require"nvim-treesitter"
 require"cmp_config"
 require"telescope_config"
 require"autosession"
+require"comment_config" 

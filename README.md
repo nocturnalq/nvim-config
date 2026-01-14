@@ -20,3 +20,6 @@
 \ + f - find files
 \ + g - find something in file 
 ```
+
+### use Comment
+`shift+v + j/k and than 'gc' - comment and uncomment files`
