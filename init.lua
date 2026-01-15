@@ -22,6 +22,9 @@ Plug('nvim-lua/plenary.nvim') --for fzf
 Plug('nvim-telescope/telescope.nvim', { [ 'tag' ] = 'v0.2.1' })
 Plug('ibhagwan/fzf-lua', {['branch'] = 'main'})
 
+-- LazyGit (requires lazygit binary installed)
+Plug('kdheepak/lazygit.nvim')
+
 -- Autosession
 Plug('rmagatti/auto-session')
 
@@ -55,6 +58,7 @@ require"lua_line"
 require"nvim-treesitter"
 require"cmp_config"
 require"telescope_config"
+require"lazygit_config"
 require"autosession"
 require"comment_config"
 require"combinations"

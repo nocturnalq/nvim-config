@@ -12,6 +12,12 @@
 
 `:PlugInstall`
 
+## LazyGit
+
+- Install the `lazygit` binary (you already did)
+- Install the Neovim plugin: run `:PlugInstall`
+- Open LazyGit inside Neovim: `:LazyGit` (default keymap: `<leader>gg`)
+
 ## How to
 
 ### use Telescope
