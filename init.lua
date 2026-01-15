@@ -28,6 +28,9 @@ Plug('rmagatti/auto-session')
 -- Comment 
 Plug('numToStr/Comment.nvim')
 
+-- Trouble
+Plug('folke/trouble.nvim')
+
 vim.call('plug#end')
 
 
@@ -55,3 +58,4 @@ require"telescope_config"
 require"autosession"
 require"comment_config"
 require"combinations"
+require"trouble_config"

@@ -18,3 +18,8 @@ keymap("n", "<Char-0xA1>", "<cmd>NvimTreeFindFile<cr>", default_opts)
 
 -- cmd+1: open left bar  
 keymap('n', '<Char-0xA4>', '<cmd>NvimTreeToggle<cr>', default_opts)
+
+-- cmd+[: get troubles
+keymap("n", "<Char-0xA2>", "<cmd>Trouble diagnostics toggle<cr>", default_opts)
+-- cmd+]: close troubles
+keymap("n", "<Char-0xA3>", "<cmd>TroubleClose<cr>", default_opts)
