@@ -14,7 +14,7 @@
 
 ## LazyGit
 
-- Install the `lazygit` binary (you already did)
+- Install the `lazygit` binary
 - Install the Neovim plugin: run `:PlugInstall`
 - Open LazyGit inside Neovim: `:LazyGit` (default keymap: `<leader>gg`)
 
