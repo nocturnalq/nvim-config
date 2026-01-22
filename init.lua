@@ -63,3 +63,11 @@ require"autosession"
 require"comment_config"
 require"combinations"
 require"trouble_config"
+
+-- System clipboard integration
+vim.opt.clipboard = "unnamedplus"
+
+-- Custom keymaps for copy/paste
+vim.keymap.set({'n', 'v'}, '<D-c>', '"+y', { desc = "Copy to system clipboard" })
+vim.keymap.set({'n', 'v'}, '<D-v>', '"+p', { desc = "Paste from system clipboard" })
+vim.keymap.set('i', '<D-v>', '<C-r>+', { desc = "Paste from system clipboard in insert mode" })
