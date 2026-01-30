@@ -3,11 +3,23 @@
 ---
 --- Zig LSP implementation + Zig Language Server
 
----@type vim.lsp.Config
 local shared = require('lsp.shared')
-return {
+
+vim.lsp.config('zls', {
+  on_attach = shared.on_attach,
+  flags = {
+    -- This will be the default in neovim 0.7+
+    debounce_text_changes = 150,
+  },
+  capabilities = {
+    workspace = {
+      didChangeWatchedFiles = {
+        dynamicRegistration = true,
+      },
+    },
+  },
   cmd = { 'zls' },
   filetypes = { 'zig', 'zir' },
   root_markers = { 'zls.json', 'build.zig', '.git' },
   workspace_required = false,
-}
+})
