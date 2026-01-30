@@ -45,10 +45,12 @@ package.path = home .. "/.config/nvim/?.lua;" .. package.path
 require"lsp.shared"  -- Load shared settings first
 require"lsp.gopls"
 require"lsp.pyright"
+require"lsp.zls"
 
 -- Enable the language servers
 vim.lsp.enable('pyright')
 vim.lsp.enable('gopls')
+vim.lsp.enable('zls')
 
 require"common"
 require"theme"
