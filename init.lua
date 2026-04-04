@@ -3,7 +3,7 @@ local Plug = vim.fn['plug#']
 
 vim.call('plug#begin')
 
-Plug('rebelot/kanagawa.nvim')
+Plug('nanotech/jellybeans.vim')
 Plug('kyazdani42/nvim-tree.lua')
 Plug('kyazdani42/nvim-web-devicons')
 Plug ('lewis6991/gitsigns.nvim') -- OPTIONAL: for git status

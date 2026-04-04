@@ -1,2 +1,2 @@
-vim.cmd.colorscheme("kanagawa")
+vim.cmd.colorscheme("jellybeans")
 vim.o.background = "dark"
