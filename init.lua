@@ -34,6 +34,8 @@ Plug('numToStr/Comment.nvim')
 -- Trouble
 Plug('folke/trouble.nvim')
 
+-- Programming Languages
+Plug('https://codeberg.org/ziglang/zig.vim')
 vim.call('plug#end')
 
 
