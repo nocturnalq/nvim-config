@@ -1,138 +1,236 @@
-## Clone config
+# Neovim Config
 
-`git clone https://github.com/nocturnalq/nvim-config.git ~/.config/nvim`
+## Setup
 
-## Install vim-plug
-
-```sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
-       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim' 
+```sh
+git clone https://github.com/nocturnalq/nvim-config.git ~/.config/nvim
 ```
 
-## Run Vim and install deps
+Install vim-plug:
 
-`:PlugInstall`
+```sh
+sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs \
+       https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+```
 
-## LazyGit
+Open Neovim and run `:PlugInstall`.
 
-- Install the `lazygit` binary
-- Install the Neovim plugin: run `:PlugInstall`
-- Open LazyGit inside Neovim: `:LazyGit` (default keymap: `<leader>gg`)
+Install the `lazygit` binary (Homebrew: `brew install lazygit`).
 
-## Hotkeys / keymaps
+---
 
-Notes:
-- `<leader>` is `\` by default (unless you set `mapleader` elsewhere)
-- These are the keymaps defined in this repo + a few plugin defaults (see the articles: [Part 1](https://poltora.dev/neovim-for-developers/), [Part 2](https://poltora.dev/neovim-for-developers-2/))
+## Plugin Audit
 
-### General (macOS Cmd-key combos)
+### Redundant / Overhead
 
-These come from `nvim/combinations.lua` and are written as `<Char-0x..>` internally (WezTerm/macOS).
+| Plugin | Problem | Recommendation |
+|--------|---------|----------------|
+| `telescope.nvim` + `fzf-lua` | Both do fuzzy finding. Only `fzf-lua` is actually wired to keymaps — Telescope is dead weight. | **Remove `telescope.nvim`** (and `plenary.nvim` if nothing else needs it). |
+| `vim-plug` | Synchronous, no lazy-loading, no lock file, comparatively slow startup. | **Migrate to `lazy.nvim`** — lazy-loading, lock file, faster startup, actively maintained. |
+| `nvim-cmp` + `vsnip` | `vsnip` is referenced in `cmp_config.lua` but never installed as a plugin. The snippet expand function calls `vsnip#anonymous` which will silently fail. | **Either add `hrsh7th/vim-vsnip`** to `init.lua`, or switch the snippet engine to `luasnip` (more popular, better maintained). |
+| `Comment.nvim` | Since **Neovim 0.10**, `gcc`/`gc` commenting is built-in (`vim.comment`). | **Remove `Comment.nvim`** if you're on Neovim ≥ 0.10. |
+| `nanotech/jellybeans.vim` | Vim-era colorscheme, no treesitter highlight group support. | Consider **`rebelot/kanagawa.nvim`**, **`folke/tokyonight.nvim`**, or **`rose-pine/neovim`** — all have treesitter/LSP-aware highlight groups. |
 
-| Key | Action |
-| --- | --- |
-| `Cmd+s` | Save file (`:write`) |
-| `Cmd+e` | Scroll down (`<C-e>`) |
-| `Cmd+Shift+e` | Scroll up (`<C-y>`) |
-| `Cmd+h` | Previous buffer/tab (`:BufferPrevious`) |
-| `Cmd+l` | Next buffer/tab (`:BufferNext`) |
-| `Cmd+w` | Close buffer/tab (`:BufferClose`) |
-| `Cmd+t` | Reveal current file in tree (`:NvimTreeFindFile`) |
-| `Cmd+1` | Toggle file tree (`:NvimTreeToggle`) |
-| `Cmd+[` | Trouble: toggle diagnostics view (`:Trouble diagnostics toggle`) |
-| `Cmd+]` | Trouble: close (`:TroubleClose`) |
+### Solid, Keep
 
-### FZF-Lua
+| Plugin | Notes |
+|--------|-------|
+| `nvim-tree.lua` | Good file explorer. |
+| `nvim-web-devicons` | Required by nvim-tree, barbar, lualine. Keep. |
+| `gitsigns.nvim` | Lightweight, fast git blame/hunk signs. |
+| `barbar.nvim` | Tab/buffer bar. Works well with gitsigns integration you have configured. |
+| `lualine.nvim` | Fast, highly configurable statusline. |
+| `nvim-treesitter` | Essential for highlighting and text objects. Note: `ensure_installed = "all"` will download every grammar on first launch — consider listing only languages you use. |
+| `nvim-lspconfig` + LSP stack | Clean modern setup using `vim.lsp.config`/`vim.lsp.enable` (Neovim 0.11+ API). |
+| `nvim-cmp` + sources | Good completion setup. Fix the vsnip issue noted above. |
+| `fzf-lua` | Fast, low-dependency fuzzy finder. Better performance than Telescope. |
+| `lazygit.nvim` | Solid lazygit integration. |
+| `auto-session` | Useful session persistence. |
+| `trouble.nvim` | Good diagnostics UI. |
 
-| Key | Action |
-| --- | --- |
-| `<leader>f` | Find files (`fzf-lua.files`) |
-| `<leader>g` | Live grep (`fzf-lua.live_grep`) |
+### Modern Alternatives Summary
 
-### Telescope
+| Current | Modern Alternative | Reason |
+|---------|--------------------|--------|
+| `vim-plug` | `lazy.nvim` | Lazy-loading, lock file, faster, actively maintained |
+| `telescope.nvim` (unused) | Remove it | `fzf-lua` already covers all use cases |
+| `Comment.nvim` | Built-in (Neovim ≥ 0.10) | No plugin needed |
+| `jellybeans.vim` | `kanagawa.nvim` / `tokyonight.nvim` | Treesitter-aware highlight groups |
+| `vim-vsnip` (missing) | `luasnip` | More features, wider community, better maintained |
 
-You have Telescope installed (`nvim-telescope/telescope.nvim`), but your current search keymaps use **fzf-lua** (section above).
+---
 
-Common Telescope commands (run with `:`):
+## Keymaps
 
-| Command | Action |
-| --- | --- |
-| `:Telescope find_files` | Find files |
-| `:Telescope live_grep` | Live grep (ripgrep) |
-| `:Telescope buffers` | Buffers |
-| `:Telescope help_tags` | Help tags |
+> **`<leader>`** is `\` by default (not explicitly set in this config).  
+> **macOS Cmd-key** combos require terminal emulator support (e.g. WezTerm with custom keybindings that send the `<Char-0x..>` sequences used in `combinations.lua`).
 
-If you want Telescope keymaps too, a typical setup is:
-- `<leader>ff` → `:Telescope find_files`
-- `<leader>fg` → `:Telescope live_grep`
-
-### NvimTree
-
-| Key | Action |
-| --- | --- |
-| `<C-n>` | Toggle tree (`:NvimTreeToggle`) |
-| `<leader>e` | Focus tree (`:NvimTreeFocus`) |
-
-### Trouble
+### macOS Cmd-key (combinations.lua)
 
 | Key | Action |
-| --- | --- |
+|-----|--------|
+| `Cmd+S` | Save file |
+| `Cmd+E` | Scroll down |
+| `Cmd+Shift+E` | Scroll up |
+| `Cmd+H` | Previous buffer (barbar) |
+| `Cmd+L` | Next buffer (barbar) |
+| `Cmd+W` | Close buffer (barbar) |
+| `Cmd+T` | Reveal current file in tree |
+| `Cmd+1` | Toggle file tree |
+| `Cmd+[` | Toggle Trouble diagnostics |
+| `Cmd+]` | Close Trouble |
+
+### Clipboard (init.lua)
+
+| Key | Mode | Action |
+|-----|------|--------|
+| `Cmd+C` | Normal, Visual | Copy to system clipboard |
+| `Cmd+V` | Normal, Visual | Paste from system clipboard |
+| `Cmd+V` | Insert | Paste from system clipboard |
+
+### File Tree — nvim-tree (vimtree.lua)
+
+| Key | Action |
+|-----|--------|
+| `Ctrl+N` | Toggle file tree |
+| `<leader>e` | Focus file tree |
+
+Inside the tree pane (nvim-tree defaults):
+
+| Key | Action |
+|-----|--------|
+| `Enter` / `o` | Open file / expand directory |
+| `a` | Create file/directory |
+| `d` | Delete |
+| `r` | Rename |
+| `x` | Cut |
+| `c` | Copy |
+| `p` | Paste |
+| `y` | Copy filename |
+| `Y` | Copy relative path |
+| `gy` | Copy absolute path |
+| `H` | Toggle hidden files |
+| `R` | Refresh tree |
+| `W` | Collapse all |
+| `q` | Close tree |
+| `g?` | Help |
+
+### Fuzzy Finding — fzf-lua (telescope_config.lua)
+
+| Key | Action |
+|-----|--------|
+| `<leader>f` | Find files |
+| `<leader>g` | Live grep (search file contents) |
+
+### Buffers — barbar (combinations.lua)
+
+| Key | Action |
+|-----|--------|
+| `Cmd+H` | Previous buffer |
+| `Cmd+L` | Next buffer |
+| `Cmd+W` | Close current buffer |
+
+barbar also supports buffer picking: `:BufferPick` (jump to any buffer by letter).
+
+### Diagnostics — Trouble (trouble_config.lua + combinations.lua)
+
+| Key | Action |
+|-----|--------|
 | `<leader>xx` | Toggle Trouble |
 | `<leader>xw` | Workspace diagnostics |
 | `<leader>xd` | Document diagnostics |
 | `<leader>xq` | Quickfix list |
 | `<leader>xl` | Location list |
 | `gR` | LSP references (Trouble view) |
+| `Cmd+[` | Toggle diagnostics |
+| `Cmd+]` | Close Trouble |
 
-### LazyGit
-
-| Key | Action |
-| --- | --- |
-| `<leader>gg` | Open LazyGit (`:LazyGit`) |
-
-### LSP (nvim-lspconfig)
-
-Diagnostics:
+### LSP — Diagnostics (lsp/shared.lua)
 
 | Key | Action |
-| --- | --- |
-| `<space>e` | Floating diagnostic |
-| `[d` | Previous diagnostic |
-| `]d` | Next diagnostic |
-| `<space>q` | Diagnostics to loclist |
+|-----|--------|
+| `<Space>e` | Open floating diagnostic |
+| `[d` | Go to previous diagnostic |
+| `]d` | Go to next diagnostic |
+| `<Space>q` | Send diagnostics to location list |
 
-When LSP attaches to a buffer:
+### LSP — Buffer (lsp/shared.lua, active when LSP attaches)
 
 | Key | Action |
-| --- | --- |
+|-----|--------|
 | `gD` | Go to declaration |
 | `gd` | Go to definition |
-| `K` | Hover |
+| `K` | Hover documentation |
 | `gi` | Go to implementation |
-| `<C-k>` | Signature help |
-| `<space>wa` | Add workspace folder |
-| `<space>wr` | Remove workspace folder |
-| `<space>wl` | List workspace folders |
-| `<space>D` | Type definition |
-| `<space>rn` | Rename |
-| `<space>ca` | Code action |
+| `Ctrl+K` | Signature help |
+| `<Space>D` | Type definition |
+| `<Space>rn` | Rename symbol |
+| `<Space>ca` | Code action |
 | `gr` | References |
-| `<space>f` | Format |
+| `<Space>f` | Format buffer |
+| `<Space>wa` | Add workspace folder |
+| `<Space>wr` | Remove workspace folder |
+| `<Space>wl` | List workspace folders |
 
-### Comment.nvim (plugin defaults)
+### Completion — nvim-cmp (cmp_config.lua)
 
 | Key | Action |
-| --- | --- |
-| `gcc` | Toggle comment (line) |
-| `gc` + motion | Toggle comment (motion), e.g. `gcj`, `gcap` |
-| Visual mode `gc` | Toggle comment for selection |
+|-----|--------|
+| `Ctrl+Space` | Trigger completion |
+| `Tab` | Next completion item / trigger completion |
+| `Shift+Tab` | Previous completion item |
+| `Enter` | Confirm selection |
+| `Ctrl+E` | Abort completion |
+| `Ctrl+B` | Scroll docs up |
+| `Ctrl+F` | Scroll docs down |
 
-Examples:
-- **Comment a block**: `Shift+V` (linewise visual) → `j/k` to select lines → `gc`
-- **Comment current line**: `gcc`
-- **Comment next line too**: `gcj`
-- **Comment a paragraph**: `gcap`
+### Commenting — Comment.nvim (comment_config.lua)
 
-### Notes / Commands (no custom keymaps yet)
+> **Note:** On Neovim ≥ 0.10 this is also built-in. These bindings are the Comment.nvim defaults.
 
-- **Barbar**: you’re using `:BufferNext`, `:BufferPrevious`, `:BufferClose` (mapped above)
-- **Auto-session**: sessions auto-restore (`auto_restore_last_session = true`). Useful commands include `:SessionSave` / `:SessionRestore`
+| Key | Mode | Action |
+|-----|------|--------|
+| `gcc` | Normal | Toggle line comment |
+| `gc` + motion | Normal | Comment over motion (e.g. `gcj`, `gc3j`, `gcap`) |
+| `gc` | Visual | Toggle comment for selection |
+| `gbc` | Normal | Toggle block comment |
+| `gb` + motion | Normal | Block comment over motion |
+
+### Git — LazyGit (lazygit_config.lua)
+
+| Key | Action |
+|-----|--------|
+| `<leader>gg` | Open LazyGit |
+
+Inside LazyGit (terminal UI — not Neovim keymaps):
+
+| Key | Action |
+|-----|--------|
+| `Space` | Stage/unstage file |
+| `c` | Commit |
+| `P` | Push |
+| `p` | Pull |
+| `b` | Branches |
+| `?` | Help |
+| `q` | Quit |
+
+### Session — auto-session
+
+No keymaps set. Use commands:
+
+| Command | Action |
+|---------|--------|
+| `:SessionSave` | Save current session |
+| `:SessionRestore` | Restore session for cwd |
+| `:SessionDelete` | Delete session for cwd |
+| `:Autosession search` | Browse/restore sessions |
+
+---
+
+## LSP Servers
+
+| Language | Server | Install |
+|----------|--------|---------|
+| Go | `gopls` | `go install golang.org/x/tools/gopls@latest` |
+| Python | `pyright` | `npm install -g pyright` or `brew install pyright` |
+| Zig | `zls` | `brew install zls` or build from source |
